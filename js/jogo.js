@@ -1,7 +1,9 @@
 console.log('Início - Jogo do Dinossauro!');
 
 const dino = document.querySelector('.dino');
+let dinoPosition = 0;
 let estaPulando = false;
+let placar = 0;
 
 //Lidando com a tecla pressionada
 document.addEventListener('keydown', (event) =>{
@@ -12,25 +14,24 @@ document.addEventListener('keydown', (event) =>{
 })
 
 function pular() {
-    let position = 0;
     let intervaloPulo = setInterval(() => {
         estaPulando = true;        
-        if(position >= 250){
+        if(dinoPosition >= 250){
             console.log('Pulou!')
             clearInterval(intervaloPulo);//Para de subir
             let intervaloQueda = setInterval(() => {
-                if(position <= 0 ) {
+                if(dinoPosition <= 0 ) {
                     clearInterval(intervaloQueda);
                     estaPulando = false;
                     console.log('Caiu!')
                 }else {
-                    position -= 20;
-                    dino.style.bottom = position + 'px';
+                    dinoPosition -= 20;
+                    dino.style.bottom = dinoPosition + 'px';
                 }
             }, 20);
         }else {
-            position += 20;
-            dino.style.bottom = position + 'px';
+            dinoPosition += 20;
+            dino.style.bottom = dinoPosition + 'px';
         }
     }, 20); //20 ms
 }
@@ -38,9 +39,9 @@ function pular() {
 const background = document.querySelector('.background');
 
 function criarCacto() {
-    const cacto = document.createElement('div');
-    let cactoPosition = 1000;
+    const cacto = document.createElement('div');    
     let tempoRandom = Math.random() * 6000;
+    let cactoPosition = 1000;
     
     cacto.classList.add('cacto');
     cacto.style.left = 1000 + 'px';
@@ -48,19 +49,28 @@ function criarCacto() {
 
     let intervaloEsquerda = setInterval(() => {
         
+        if (cactoPosition <= -59 ) {
+            placar += 10;
+            console.log(placar);
+        }
 
         if(cactoPosition <= -60) {
             clearInterval(intervaloEsquerda);
             background.removeChild(cacto);
+        } else if ( cactoPosition > 0 &&
+                    cactoPosition <= 60 &&
+                    dinoPosition <= 60) {
+                document.body.innerHTML = '<h1 class="fim-de-jogo">Fim de Jogo</h1> <h2 class="fim-de-jogo" id="placar">Placar: </h2>';
+                document.querySelector('#placar').innerText =  `Placar: ${placar}`; 
+                
+                clearTimeout(tempoCacto);                
         } else {
             cactoPosition -= 10;
             cacto.style.left = cactoPosition + 'px';
-        }
-
+        }        
     }, 20);
 
-    setTimeout(criarCacto, tempoRandom);
-
+    let tempoCacto = setTimeout(criarCacto, tempoRandom);
 }
 
 //Assim que o jogo iniciar
